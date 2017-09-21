@@ -135,11 +135,15 @@ namespace NumberText
         /// 桁ごとに区切って数字単位つき文字列に変換
         /// </summary>
         /// <param name="n">変換する数値</param>
-        /// <param name="take">先頭から何区切り取るか</param>
+        /// <param name="take">先頭から何区切り取るか（０以下の場合は全部取る）</param>
         /// <returns></returns>
         public string TakeFormatNumber(ulong n, int take)
-        {
+        {            
             var list = FomatNumberList(n);
+
+            //区切りが０以下の場合は全部取る
+            if (take <= 0) { take = list.Count(); }
+
             return string.Join("", list.Take(take));
         }
 

@@ -15,8 +15,8 @@ namespace NumberText.Tests
         public void FomatNumberTest()
         {
             var k = new KanjiNumber();
-            
-            var str = string.Join("",k.FomatNumberList(1234000005678910));
+
+            var str = string.Join("", k.FomatNumberList(1234000005678910));
 
             Console.WriteLine(str);
 
@@ -28,11 +28,28 @@ namespace NumberText.Tests
         {
             var k = new KanjiNumber();
 
-            var str = k.TakeFormatNumber(1234000005678910,2);
+            var str = k.TakeFormatNumber(1234000005678910, 2);
 
             Console.WriteLine(str);
 
             Assert.IsTrue(str == "1234兆");
+        }
+
+        public TestContext TestContext { get; set; }
+
+        [TestMethod]
+        [TestCase(1234000005678910UL, 2)]
+        [TestCase(1234000005678910UL, 0)]
+        public void TakeFomatNumberTestAll()
+        {
+            TestContext.Run((ulong n,int take) =>
+            {
+                var k = new KanjiNumber();
+
+                var str = k.TakeFormatNumber(n,take);
+                Console.WriteLine(str);
+            });
+
         }
 
         [TestMethod()]
@@ -40,11 +57,23 @@ namespace NumberText.Tests
         {
             var k = new KanjiNumber();
 
-            var str = k.DecimalFormatNumber(1234000005678910,2);
+            var str = k.DecimalFormatNumber(1234000005678910, 2);
 
             Console.WriteLine(str);
 
             Assert.IsTrue(str == "1234.00兆");
+        }
+
+        [TestMethod()]
+        public void CreateUnitTest()
+        {
+            var k = new KanjiNumber();
+
+            var list = (string[])k.AsDynamic().CreateUnit(3);
+
+            Console.WriteLine(list[0]);
+
+            Assert.IsTrue(list.Last() == "cz");
         }
     }
 }
