@@ -155,6 +155,9 @@ namespace NumberText
         /// <returns></returns>
         public string DecimalFormatNumber(ulong n, int len)
         {
+            //表示桁数が０以下または区切り桁数を超えたら例外
+            if (len > this.place || len < 0) { throw new ArgumentOutOfRangeException(); }
+
             var list = SplitNumber(n, this.place);   //桁ごとに区切る
             var u = unit[list.Count - 2]; //単位
 
