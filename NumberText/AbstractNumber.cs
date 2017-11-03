@@ -19,63 +19,21 @@ namespace NumberText
         /// <param name="n">数値</param>
         /// <param name="place">桁</param>
         /// <returns></returns>
-        protected List<long> SplitNumber(long n, int place)
+        protected List<int> SplitNumber(ulong n, int place)
         {
-            var list = new List<long>();
-
-            //累乗
-            var sunit = Pow(10, place);
-
-            for (; n > 0; n /= sunit)
-            {
-                var x = (n % sunit);
-                list.Add(x);
-            }
-            return list;
-        }
-
-        /// <summary>
-        /// 数値を桁数ごとに分解
-        /// </summary>
-        /// <param name="n">数値</param>
-        /// <param name="place">桁</param>
-        /// <returns></returns>
-        protected List<ulong> SplitNumber(ulong n, int place)
-        {
-            var list = new List<ulong>();
+            var list = new List<int>();
 
             //累乗
             var sunit = (ulong)Pow(10, place);
 
             for (; n > 0; n /= sunit)
             {
-                var x = (n % sunit);
+                int x = (int)(n % sunit);
                 list.Add(x);
             }
             return list;
         }
-
-        /// <summary>
-        /// 数値を桁数ごとに分解
-        /// </summary>
-        /// <param name="n">数値</param>
-        /// <param name="place">桁</param>
-        /// <returns></returns>
-        protected List<BigInteger> SplitNumber(BigInteger n, int place)
-        {
-            var list = new List<BigInteger>();
-
-            //累乗
-            var sunit = (BigInteger)Pow(10, place);
-
-            for (; n > 0; n /= sunit)
-            {
-                var x = (n % sunit);
-                list.Add(x);
-            }
-            return list;
-        }
-
+        
         /// <summary>
         /// 累乗
         /// </summary>
@@ -138,7 +96,7 @@ namespace NumberText
         /// <param name="take">先頭から何区切り取るか（０以下の場合は全部取る）</param>
         /// <returns></returns>
         public string TakeFormatNumber(ulong n, int take)
-        {            
+        {
             var list = FomatNumberList(n);
 
             //区切りが０以下の場合は全部取る
@@ -146,7 +104,7 @@ namespace NumberText
 
             return string.Join("", list.Take(take));
         }
-
+        
         /// <summary>
         /// 先頭２ブロックを小数点つきで表示（例：1.2万）
         /// </summary>
@@ -155,10 +113,16 @@ namespace NumberText
         /// <returns></returns>
         public string DecimalFormatNumber(ulong n, int len)
         {
-            //表示桁数が０以下または区切り桁数を超えたら例外
+            //表示桁数が０未満または区切り桁数を超えたら例外
             if (len > this.place || len < 0) { throw new ArgumentOutOfRangeException(); }
 
             var list = SplitNumber(n, this.place);   //桁ごとに区切る
+            
+            return InnerFormatNumber(len, list);
+        }
+
+        private string InnerFormatNumber(int len, List<int> list)
+        {
             var u = unit[list.Count - 2]; //単位
 
             list.Reverse();
@@ -175,6 +139,7 @@ namespace NumberText
             {
                 str = tlist.First().ToString();
             }
+
             return str + u;
         }
 
@@ -204,6 +169,74 @@ namespace NumberText
             return ret;
         }
 
+        #region BigInteger
+
+        /// <summary>
+        /// 数値を桁数ごとに分解
+        /// </summary>
+        /// <param name="n">数値</param>
+        /// <param name="place">桁</param>
+        /// <returns></returns>
+        protected List<int> SplitNumber(BigInteger n, int place)
+        {
+            var list = new List<int>();
+
+            //累乗
+            var sunit = BigInteger.Pow(10, place);
+
+            for (; n > 0; n /= sunit)
+            {
+                int x = (int)(n % sunit);
+                list.Add(x);
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// 桁ごとに区切って数字単位つき文字列のリストに変換
+        /// </summary>
+        /// <param name="n">変換する数値</param>
+        /// <returns></returns>
+        public List<string> FomatNumberList(BigInteger n)
+        {
+            var list = SplitNumber(n, this.place);   //桁ごとに区切る
+            List<string> str = FormatStringList(list);
+            return str;
+        }
+
+        /// <summary>
+        /// 桁ごとに区切って数字単位つき文字列に変換
+        /// </summary>
+        /// <param name="n">変換する数値</param>
+        /// <param name="take">先頭から何区切り取るか（０以下の場合は全部取る）</param>
+        /// <returns></returns>
+        public string TakeFormatNumber(BigInteger n, int take)
+        {
+            var list = FomatNumberList(n);
+
+            //区切りが０以下の場合は全部取る
+            if (take <= 0) { take = list.Count(); }
+
+            return string.Join("", list.Take(take));
+        }
+
+        /// <summary>
+        /// 先頭２ブロックを小数点つきで表示（例：1.2万）
+        /// </summary>
+        /// <param name="n">変換する数値</param>
+        /// <param name="len">小数点何桁表示するか</param>
+        /// <returns></returns>
+        public string DecimalFormatNumber(BigInteger n, int len)
+        {
+            //表示桁数が０未満または区切り桁数を超えたら例外
+            if (len > this.place || len < 0) { throw new ArgumentOutOfRangeException(); }
+
+            var list = SplitNumber(n, this.place);   //桁ごとに区切る
+
+            return InnerFormatNumber(len, list);
+        }
+        #endregion
+
         /// <summary>
         /// 数の単位一覧
         /// </summary>
@@ -213,5 +246,6 @@ namespace NumberText
         /// 区切る桁数
         /// </summary>
         abstract protected int place { get; }
+
     }
 }
