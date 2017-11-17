@@ -114,32 +114,11 @@ namespace NumberText
         public string DecimalFormatNumber(ulong n, int len)
         {
             //表示桁数が０未満または区切り桁数を超えたら例外
-            CheckOutOfRange(len);
+            if (len < 0 || len > this.place) { throw new ArgumentOutOfRangeException($"表示桁数は0以上{this.place}以下にしてください。"); }
+
             var list = SplitNumber(n, this.place);   //桁ごとに区切る
 
             return InnerFormatNumber(len, list);
-        }
-
-        /// <summary>
-        /// 小数点表示桁数のチェック
-        /// </summary>
-        /// <param name="len"></param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// 表示桁数が０未満です。 引数名：" + nameof(len)
-        /// or
-        /// </exception>
-        private void CheckOutOfRange(int len)
-        {
-            //表示桁数が０未満または区切り桁数を超えたら例外
-            if (len < 0)
-            {
-                throw new ArgumentOutOfRangeException("表示桁数が０未満です。 引数名：" + nameof(len));
-            }
-            if (len > this.place)
-            {
-                var s = string.Format("表示桁数が{0}桁を超えています。 ", this.place);
-                throw new ArgumentOutOfRangeException(s + "引数名：" + nameof(len));
-            }
         }
 
         private string InnerFormatNumber(int len, List<int> list)
@@ -249,7 +228,8 @@ namespace NumberText
         /// <returns></returns>
         public string DecimalFormatNumber(BigInteger n, int len)
         {
-            CheckOutOfRange(len);
+            //表示桁数が０未満または区切り桁数を超えたら例外
+            if (len < 0 || len > this.place) { throw new ArgumentOutOfRangeException($"表示桁数は0以上{this.place}以下にしてください。"); }
 
             var list = SplitNumber(n, this.place);   //桁ごとに区切る
 

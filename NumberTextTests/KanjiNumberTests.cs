@@ -110,6 +110,8 @@ namespace NumberText.Tests
                     var list = (string[])k.AsDynamic().CreateUnit(count);
                 });
 
+                (ex.InnerException is ArgumentOutOfRangeException).Is(true);
+
                 Console.WriteLine(ex.InnerException.Message);
             });
         }
